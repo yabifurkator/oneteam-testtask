@@ -66,13 +66,19 @@ function swap_guest_host(FootballMatch $match): FootballMatch {
 
 $unique_matches = generate_matches();
 
-$first_round_matches = [];
-$second_round_matches = [];
+$host_matches = [];
+$guest_matches = [];
+
+$all_unique_matches = [];
 
 foreach ($unique_matches as $index => $match) {
-    $first_round_matches[] = $match;
-    $second_round_matches[] = swap_guest_host($match);
+    $host_matches[] = $match;
+    $guest_matches[] = swap_guest_host($match);
+    
+    $all_unique_matches[] = clone $match;
+    $all_unique_matches[] = clone swap_guest_host($match);
 }
+
 
 class Tour {
     private array $matches;
@@ -111,21 +117,75 @@ for ($i = 0; $i < $one_round_tour_count; $i++) {
     $guest_playing_tours[] = new Tour(max_match_count: $max_tour_match_count);
 }
 
-for ($i = 0; $i < count($first_round_matches); $i++) {
-    $host_playing_tours[$i % $one_round_tour_count]->add_match($first_round_matches[$i]);
-}
-for ($i = 0; $i < count($second_round_matches); $i++) {
-    $guest_playing_tours[$i % $one_round_tour_count]->add_match($second_round_matches[$i]);
+
+function get_opposite_match_from($match, $opposite_match_array) {
+    foreach ($opposite_match_array as $opposite_match) {
+        if ($opposite_match->get_guest() == $match->get_host() && 
+            $opposite_match->get_host() == $match->get_guest()) {
+                return $opposite_match;
+        }
+    }
+    throw new Exception('Not found');
 }
 
-$tours = [];
-for ($i = 0; $i < $one_round_tour_count; $i++) {
-    $tours[] = $host_playing_tours[$i];
-    $tours[] = $guest_playing_tours[count($guest_playing_tours) - 1 - $i];
+function delete_match_from($match, &$match_array) {
+    foreach ($match_array as $index => $m) {
+        if ($m->get_host() == $match->get_host() && 
+            $m->get_guest() == $match->get_guest()) {
+                unset($match_array[$index]);
+                return;
+        }
+    }
+    throw new Exception('Not found');
+} 
+
+function get_match_with_guest_from($guest, $match_array) {
+    foreach ($match_array as $match) {
+        if ($match->get_guest() == $guest) {
+            return $match;
+        }
+    }
+    throw new Exception('Not found');
 }
 
-$first_round_tours = array_slice(array: $tours, offset: 0, length: $one_round_tour_count);
-$second_round_tours = array_slice(array: $tours, offset: $one_round_tour_count, length: $one_round_tour_count);
+$m = [];
+$i = 0;
+while (count($host_matches) != 0) {
+    try {
+        $match = clone array_shift($host_matches);
+        $opposite_match = clone get_opposite_match_from(match: $match, opposite_match_array: $guest_matches);
+        delete_match_from(match: $opposite_match, match_array: $guest_matches);
+
+        $next_match = clone get_match_with_guest_from(guest: $match->get_host(), match_array: $guest_matches);
+        delete_match_from(match: $next_match, match_array: $guest_matches);
+        $opposite_match = clone get_opposite_match_from(match: $next_match, opposite_match_array: $host_matches);
+        delete_match_from(match: $opposite_match, match_array: $host_matches);
+        
+        $host_playing_tours[$i % $one_round_tour_count]->add_match(match: $match);
+        $i++;
+        $host_playing_tours[$i % $one_round_tour_count]->add_match(match: $next_match);
+        $i++;
+
+        $m[] = $match;
+        $m[] = $next_match;
+        //echo $match . ' --------- ' . $next_match . PHP_EOL;
+        //echo count($host_matches) . ' --- ' . count($guest_matches) . PHP_EOL;
+    }
+    catch (Exception $ex) {
+        continue;
+    }
+}
+
+foreach ($host_playing_tours as $index => $tour) {
+    echo 'TOUR ' . ($index + 1) . PHP_EOL;
+    foreach ($tour->get_matches() as $index => $match) {
+        echo ($index + 1) . ' -> ' . $match . PHP_EOL;
+    }
+}
+
+
+$first_round_tours = $host_playing_tours;
+$second_round_tours = $host_playing_tours;
 
 ?>
 
@@ -141,13 +201,13 @@ table, th, td {
     box-sizing: border-box;
 }
 
-/* Create two equal columns that floats next to each other */
+
 .column {
     float: left;
     width: 50%;
 }
 
-/* Clear floats after the columns */
+
 .row:after {
     content: "";
     display: table;
