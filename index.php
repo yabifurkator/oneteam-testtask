@@ -127,6 +127,51 @@ for ($i = 0; $i < $one_round_tour_count; $i++) {
 $first_round_tours = array_slice(array: $tours, offset: 0, length: $one_round_tour_count);
 $second_round_tours = array_slice(array: $tours, offset: $one_round_tour_count, length: $one_round_tour_count);
 
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
+<body>
+    <h3>ТУРЫ ПЕРВОГО КРУГА</h3>
+    <table>
+        <?php
+        foreach ($first_round_tours as $index_outer => $tour) {
+            echo '<h4>ТУР НОМЕР ' . ($index_outer + 1) . '</h4>';
+
+            echo '<table>';
+            ?>
+            
+            <tr>
+                <th>Хозяева</th>
+                <th>Гости</th>
+            </tr>
+
+            <?php
+            foreach ($tour->get_matches() as $index_inner => $match) {
+                echo '<tr>';
+
+                echo '<td>';
+                echo $match->get_host();
+                echo '</td>';
+
+                echo '<td>';
+                echo $match->get_guest();
+                echo '</td>';
+
+                echo '</tr>';
+            }
+            echo '</table>';
+        }
+        ?>
+
+</body>
+</html>
+<!--
 echo 'ТУРЫ ПЕРВОГО КРУГА' . PHP_EOL;
 foreach ($first_round_tours as $index_outer => $tour) {
     echo ('ТУР ' . ($index_outer + 1)) . PHP_EOL;
