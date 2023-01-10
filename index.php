@@ -132,42 +132,139 @@ $second_round_tours = array_slice(array: $tours, offset: $one_round_tour_count, 
 <!DOCTYPE html>
 <html lang="en">
 <style>
+
 table, th, td {
   border:1px solid black;
 }
+
+* {
+    box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 50%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+h4 {
+    margin: 0px;
+}
+h3 {
+    margin-left: 30px;
+}
+table {
+    margin-bottom: 25px;
+}
+
+.selected {
+    background-color: #FFD700;
+}
+
+.my-table {
+    margin: 20px;
+}
+
 </style>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+$('.matchi').live('click', function(){
+  $(this).toggleClass('selected');
+});
+</script>
+
+</head>
 <body>
-    <h3>ТУРЫ ПЕРВОГО КРУГА</h3>
-    <table>
-        <?php
-        foreach ($first_round_tours as $index_outer => $tour) {
-            echo '<h4>ТУР НОМЕР ' . ($index_outer + 1) . '</h4>';
-
-            echo '<table>';
-            ?>
-            
-            <tr>
-                <th>Хозяева</th>
-                <th>Гости</th>
-            </tr>
-
+    <div class="row">
+        <div class="column" style="background-color:#90EE90;">
+            <h3>ТУРЫ ПЕРВОГО КРУГА</h3>
             <?php
-            foreach ($tour->get_matches() as $index_inner => $match) {
-                echo '<tr>';
+            foreach ($first_round_tours as $index_outer => $tour) {
+                ?>
+                <div class="my-table">
+                <?php
+                echo '<h4>ТУР НОМЕР ' . ($index_outer + 1) . '</h4>';
 
-                echo '<td>';
-                echo $match->get_host();
-                echo '</td>';
+                echo '<table>';
+                ?>
+                
+                <tr style="background-color:beige;">
+                    <th>Хозяева</th>
+                    <th>Гости</th>
+                </tr>
 
-                echo '<td>';
-                echo $match->get_guest();
-                echo '</td>';
+                <?php
+                foreach ($tour->get_matches() as $index_inner => $match) {
+                    ?>
+                    <tr class="matchi">
+                        <td>
+                            <?= $match->get_host() ?>
+                        </td>
+                        <td>
+                            <?= $match->get_guest() ?>
+                        </td>
+                    </tr>
+                    <?php
+                }
+                echo '</table>';
+                ?>
 
-                echo '</tr>';
+                </div>
+                <?php
             }
-            echo '</table>';
-        }
-        ?>
+            ?>
+        </div>
+        
+        <div class="column" style="background-color:#ff9999;">
+            <h3>ТУРЫ ВТОРОГО КРУГА</h3>
+            <?php
+            foreach ($second_round_tours as $index_outer => $tour) {
+                ?>
+                <div class="my-table">
+                <?php
+                echo '<h4>ТУР НОМЕР ' . ($index_outer + 1) . '</h4>';
+
+                echo '<table>';
+                ?>
+                
+                <tr style="background-color:beige;">
+                    <th>Хозяева</th>
+                    <th>Гости</th>
+                </tr>
+
+                <?php
+                foreach ($tour->get_matches() as $index_inner => $match) {
+                    ?>
+                    <tr>
+                        <td>
+                            <?= $match->get_host() ?>
+                        </td>
+                        <td>
+                            <?= $match->get_guest() ?>
+                        </td>
+                    </tr>
+                    <?php
+                }
+                echo '</table>';
+                ?>
+
+                </div>
+                <?php
+            }
+            ?>
+        </div>
+    </div>
+
+    
 
 </body>
 </html>
