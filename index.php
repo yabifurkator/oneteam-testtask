@@ -23,6 +23,8 @@ $command_names = [
     'Дерби Каунти',
 ];
 
+shuffle($command_names);
+
 class FootballMatch {
     private string $host;
     private string $guest;
@@ -71,11 +73,6 @@ foreach ($unique_matches as $index => $match) {
     $first_round_matches[] = $match;
     $second_round_matches[] = swap_guest_host($match);
 }
-
-//$output = [];
-//for ($i = 0; $i < count($first_round_matches); $i++) {
-//    echo ($i + 1) . ': ' . '1st round ' . $first_round_matches[$i] . ', ' . '2nd round ' . $second_round_matches[$i] . PHP_EOL;
-//}
 
 class Tour {
     private array $matches;
@@ -131,167 +128,21 @@ $first_round_tours = array_slice(array: $tours, offset: 0, length: $one_round_to
 $second_round_tours = array_slice(array: $tours, offset: $one_round_tour_count, length: $one_round_tour_count);
 
 echo 'ТУРЫ ПЕРВОГО КРУГА' . PHP_EOL;
-foreach ($first_round_tours as $index => $tour) {
-    echo ('ТУР ' . ($index + 1)) . PHP_EOL;
-    foreach ($tour->get_matches() as $index => $match) {
-        echo ($index + 1) . ' -> ' . $match . PHP_EOL;
+foreach ($first_round_tours as $index_outer => $tour) {
+    echo ('ТУР ' . ($index_outer + 1)) . PHP_EOL;
+    foreach ($tour->get_matches() as $index_inner => $match) {
+        echo ($index_inner + 1) . ' -> ' . $match . PHP_EOL;
     }
 }
 
 echo PHP_EOL . PHP_EOL;
 
 echo 'ТУРЫ ВТОРОГО КРУГА' . PHP_EOL;
-foreach ($second_round_tours as $index => $tour) {
-    echo ('ТУР ' . ($index + 1)) . PHP_EOL;
-    foreach ($tour->get_matches() as $index => $match) {
-        echo ($index + 1) . ' -> ' . $match . PHP_EOL;
+foreach ($second_round_tours as $index_outer => $tour) {
+    echo ('ТУР ' . ($index_outer + 1)) . PHP_EOL;
+    foreach ($tour->get_matches() as $index_inner => $match) {
+        echo ($index_inner + 1) . ' -> ' . $match . PHP_EOL;
     }
 }
 
 echo PHP_EOL . count($host_playing_tours) . ' -- ' . count($guest_playing_tours) . PHP_EOL;
-
-
-
-/*
-
-$one_round_tour_count = 19;
-$tour_max_match_count = 10;
-
-$first_round_tours = [];
-$second_round_tours = [];
-
-for ($i = 0; $i < $one_round_tour_count; $i++) {
-    $first_round_tour = new Tour(max_match_count: $tour_max_match_count);
-    while (!$first_round_tour->is_full()) {
-        $match = array_shift($first_round_matches);
-        $first_round_tour->add_match($match);
-    }
-    $first_round_tours[] = $first_round_tour;
-
-    $second_round_tour = new Tour(max_match_count: $tour_max_match_count);
-    while (!$second_round_tour->is_full()) {
-        $match = array_shift($second_round_matches);
-        $second_round_tour->add_match($match);
-    }
-    $second_round_tours[] = $second_round_tour;
-}
-
-echo 'МАТЧИ ПЕРВОГО ТУРА' . PHP_EOL;
-foreach ($first_round_tours as $index => $tour) {
-    echo ('ТУР ' . ($index + 1)) . PHP_EOL;
-    foreach ($tour->get_matches() as $index => $match) {
-        echo ($index + 1) . ' -> ' . $match . PHP_EOL;
-    }
-}
-
-echo 'МАТЧИ ВТОРОГО ТУРА' . PHP_EOL;
-foreach ($second_round_tours as $index => $tour) {
-    echo ('ТУР ' . ($index + 1)) . PHP_EOL;
-    foreach ($tour->get_matches() as $index => $match) {
-        echo ($index + 1) . ' -> ' . $match . PHP_EOL;
-    }
-}
-
-echo PHP_EOL . count($first_round_tours) . ' -- ' . count($second_round_tours) . PHP_EOL;
-
-
-/*
-foreach ($first_round_matches as $index => $match) {
-    for
-}
-for ($i = 0; $i < count($first_round_matches); $i++) {
-
-}
-
-/*
-for ($i = 0; $i < 190; $i++) {
-    echo ($i + 1) . ' 1st round -> ' . $first_round_matches[$i] . ', 2nd round -> ' . $second_round_matches[$i] . PHP_EOL;
-}
-
-echo PHP_EOL;
-echo PHP_EOL;
-echo count($first_round_matches) . ' <-> ' . count($second_round_matches) . PHP_EOL;
-
-
-class Command {
-    private $name;
-    private $competitors;
-
-    function __construct($name) {
-        $this->name = $name;
-        $this->competitors = [];
-    }
-
-    function add_competitor($competitor) {
-        $this->competitors[] = $competitor;
-    }
-
-    function get_name() {
-        return $this->name;
-    }
-    function get_competitors() {
-        return $this-> competitors;
-    }
-
-    function get_matches() {
-        $matches = [];
-        foreach ($this->competitors as $index => $competitor) {
-            $match = [
-                'host' => $this->name
-            ]
-            $matches[] = 
-        }
-    }
-
-    function __toString() {
-        $result = 'name: ' . $this->name . PHP_EOL;
-        foreach ($this->competitors as $index => $competitor) {
-            $result .= '--' . ($index + 1) . ' -> ' . $competitor . PHP_EOL;
-        }
-        return $result;
-    }
-}
-
-
-
-$commands = [];
-foreach ($command_names as $name) {
-    $commands[] = new Command(name: $name);
-}
-
-foreach ($commands as $command) {
-    foreach ($command_names as $name) {
-        if ($command->get_name() == $name) {
-            continue;
-        }
-        $command->add_competitor($name);
-    }
-}
-
-foreach ($commands as $index => $command) {
-    echo ($index + 1) . ' -> ' . $command;
-}
-
-
-*/
-
-/*
-
-$command_pairs = array();
-foreach ($commands as $index_outer => $command_outer) {
-    foreach ($commands as $index_inner => $command_inner) {
-        if ($index_outer == $index_inner) {
-            continue;
-        }
-        $pair = [$command_outer, $command_inner];
-        $command_pairs[] = $pair;
-    }
-}
-
-foreach ($command_pairs as $index => $pair) {
-    echo ($index + 1) . ' -> ' . $pair[0] . ' -- ' . $pair[1] . PHP_EOL;
-}
-
-$match_count = count($commands) - 1;
-echo $match_count;
-*/
