@@ -177,13 +177,8 @@ table {
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-$("td").live('click', function() {
-    var class_name = $(this).attr('class');
-    $("td").removeClass('selected')
-    $("td").filter('.' + class_name).toggleClass('selected');
-    console.log(class_name);
-
-    // $(this).toggleClass('selected');
+$('.matchi').live('click', function(){
+  $(this).toggleClass('selected');
 });
 </script>
 
@@ -210,15 +205,12 @@ $("td").live('click', function() {
                 <?php
                 foreach ($tour->get_matches() as $index_inner => $match) {
                     ?>
-                    <?php $host_class_name = str_replace(' ', '', $match->get_host()); ?>
-                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest()); ?>
-
-                    <tr class="<?= $host_class_name; ?> <?= $guest_class_name; ?>">
-                        <td class="<?= $host_class_name; ?>">
-                            <?= $match->get_host(); ?>
+                    <tr class="matchi">
+                        <td>
+                            <?= $match->get_host() ?>
                         </td>
-                        <td class="<?= $guest_class_name; ?>" >
-                            <?= $match->get_guest(); ?>
+                        <td>
+                            <?= $match->get_guest() ?>
                         </td>
                     </tr>
                     <?php
@@ -252,15 +244,12 @@ $("td").live('click', function() {
                 <?php
                 foreach ($tour->get_matches() as $index_inner => $match) {
                     ?>
-                    <?php $host_class_name = str_replace(' ', '', $match->get_host()); ?>
-                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest()); ?>
-
-                    <tr class="<?= $host_class_name; ?> <?= $guest_class_name; ?>">
-                        <td class="<?= $host_class_name; ?>">
-                            <?= $match->get_host(); ?>
+                    <tr>
+                        <td>
+                            <?= $match->get_host() ?>
                         </td>
-                        <td class="<?= $guest_class_name; ?>" >
-                            <?= $match->get_guest(); ?>
+                        <td>
+                            <?= $match->get_guest() ?>
                         </td>
                     </tr>
                     <?php
