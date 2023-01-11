@@ -1,5 +1,10 @@
 <?php
 
+// алгоритм работает только для чётного кол-ва
+// команд (для нечётного кол-ва не реализована)
+// поддержка за нехваткой времени
+
+
 $command_names = [
     'Ливерпуль',
     'Челси',
@@ -23,109 +28,142 @@ $command_names = [
     'Дерби Каунти',
 ];
 
-shuffle($command_names);
+$tour_count = count($command_names) - 1;
+$tour_match_count = count($command_names) / 2;
 
 class FootballMatch {
-    private string $host;
-    private string $guest;
+    public $host;
+    public $guest;
 
-    public function __construct(string $host, string $guest) {
-        $this->host = $host;
-        $this->guest = $guest;
+    public function get_host_name($command_names) {
+        return $command_names[$this->host - 1];
     }
-    
-    public function get_host(): string {
-        return $this->host;
-    }
-    public function get_guest(): string {
-        return $this->guest;
+    public function get_guest_name($command_names) {
+        return $command_names[$this->guest - 1];
     }
 
-    public function __toString(): string {
-        return '[host: ' . $this->host . ', guest: ' . $this->guest . ']';
+    public function __toString() {
+        $host = is_null($this->host) ? '*' : $this->host;
+        $guest = is_null($this->guest) ? '*' : $this->guest;
+        $left = ($this->host < 10) ? ' ' : '';
+        $right = ($this->guest < 10) ? ' ' : '';
+        return '[' . $host . $left . ' - ' . $right . $guest . ']';
     }
-}
-
-function generate_matches(): array {
-    $matches = [];
-    for ($i = 0; $i < count($GLOBALS['command_names']); $i++) {
-        $host_name = $GLOBALS['command_names'][$i];
-        for ($j = $i + 1; $j < count($GLOBALS['command_names']); $j++) {
-            $guest_name = $GLOBALS['command_names'][$j];
-
-            $match = new FootballMatch(host: $host_name, guest: $guest_name);
-            $matches[] = $match;
-        }
-    }
-    return $matches;
-}
-
-function swap_guest_host(FootballMatch $match): FootballMatch {
-    return new FootballMatch(host: $match->get_guest(), guest: $match->get_host());
-}
-
-$unique_matches = generate_matches();
-
-$first_round_matches = [];
-$second_round_matches = [];
-
-foreach ($unique_matches as $index => $match) {
-    $first_round_matches[] = $match;
-    $second_round_matches[] = swap_guest_host($match);
 }
 
 class Tour {
-    private array $matches;
-    private int $max_match_count;
-
-    public function __construct($max_match_count) {
+    private $matches;
+    private $max_match_count;
+    
+    public function __construct($max_match_count, $matches) {
         $this->max_match_count = $max_match_count;
-        $this->matches = [];
+        $this->matches = $matches;
     }
 
-    public function add_match($match): void {
-        if ($this->is_full()) {
-            throw new Exception('Stack overflow');
-        }
-        $this->matches[] = $match;
-    }
-    public function get_matches(): array {
+    public function get_matches() {
         return $this->matches;
     }
-
-    public function is_full(): bool {
-        return count($this->matches) == $this->max_match_count;
+    public function get_max_match_count() {
+        return $this->max_match_count;
     }
 
-    public function match_count(): int {
-        return count($this->matches);
+    public function __toString() {
+        $result = '';
+        foreach ($this->matches as $match) {
+            $result .= $match . ' ';
+        }
+        return $result;
     }
-}
-
-$max_tour_match_count = 10;
-$one_round_tour_count = 19;
-$host_playing_tours = [];
-$guest_playing_tours = [];
-for ($i = 0; $i < $one_round_tour_count; $i++) {
-    $host_playing_tours[] = new Tour(max_match_count: $max_tour_match_count);
-    $guest_playing_tours[] = new Tour(max_match_count: $max_tour_match_count);
-}
-
-for ($i = 0; $i < count($first_round_matches); $i++) {
-    $host_playing_tours[$i % $one_round_tour_count]->add_match($first_round_matches[$i]);
-}
-for ($i = 0; $i < count($second_round_matches); $i++) {
-    $guest_playing_tours[$i % $one_round_tour_count]->add_match($second_round_matches[$i]);
 }
 
 $tours = [];
-for ($i = 0; $i < $one_round_tour_count; $i++) {
-    $tours[] = $host_playing_tours[$i];
-    $tours[] = $guest_playing_tours[count($guest_playing_tours) - 1 - $i];
+for ($i = 0; $i < $tour_count; $i++) {
+    $matches = [];
+    for ($j = 0; $j < $tour_match_count; $j++) {
+        $match = new FootballMatch();
+        $matches[] = $match;
+    }
+    
+    $tour = new Tour(max_match_count: $tour_match_count, matches: $matches);
+    $tours[] = $tour;
 }
 
-$first_round_tours = array_slice(array: $tours, offset: 0, length: $one_round_tour_count);
-$second_round_tours = array_slice(array: $tours, offset: $one_round_tour_count, length: $one_round_tour_count);
+// первый шаг
+foreach ($tours as $index => $tour) {
+    $first_match = $tour->get_matches()[0];
+    $last_match_index = count($command_names);
+    if ($index % 2 == 0) {
+        $first_match->guest = $last_match_index;
+    }
+    else {
+        $first_match->host = $last_match_index;
+    }
+}
+
+// второй шаг
+$numb = 1;
+foreach ($tours as $tour_index => $tour) {
+    foreach ($tour->get_matches() as $match_index => $match) {
+        if (!is_null($match->host)) {
+            $match->guest = $numb;
+        }
+        else {
+            $match->host = $numb;
+        }
+
+        $numb++;
+        if ($numb == count($command_names)) {
+            $numb = 1;
+        }
+    }
+}
+
+// третий шаг
+$numb = count($command_names) - 1;
+foreach ($tours as $tour_index => $tour) {
+    foreach ($tour->get_matches() as $match_index => $match) {
+        if (!is_null($match->guest)) {
+            continue;
+        }
+        $match->guest = $numb;
+
+        $numb--;
+        if ($numb == 0) {
+            $numb = count($command_names) - 1;
+        }
+    }
+}
+
+function print_tours($tours) {
+    foreach ($tours as $index => $tour) {
+        if ($index + 1 < 10) {
+            echo ' ';
+        }
+        echo ($index + 1) . ' -> ' . $tour . PHP_EOL;
+    }
+}
+//print_tours($tours);
+
+function get_reverse_tour($tour) {
+    $reverse_matches = [];
+    foreach ($tour->get_matches() as $match) {
+        $reverse_match = new FootballMatch();
+        $reverse_match->host = $match->guest;
+        $reverse_match->guest = $match->host;
+
+        $reverse_matches[] = $reverse_match;
+    }
+    $reverse_tour = new Tour(
+        max_match_count: $tour->get_max_match_count(),
+        matches: $reverse_matches
+    );
+    return $reverse_tour;
+}
+
+$reverse_tours = [];
+foreach ($tours as $index => $tour) {
+    $reverse_tours[] = get_reverse_tour(tour: $tour);
+}
 
 ?>
 
@@ -141,13 +179,11 @@ table, th, td {
     box-sizing: border-box;
 }
 
-/* Create two equal columns that floats next to each other */
 .column {
     float: left;
     width: 50%;
 }
 
-/* Clear floats after the columns */
 .row:after {
     content: "";
     display: table;
@@ -180,7 +216,7 @@ table {
 $("td").live('click', function() {
     var class_name = $(this).attr('class');
     $("td").removeClass('selected')
-    $("td").filter('.' + class_name).toggleClass('selected');
+    $("td").filter('.' + class_name).not(this).toggleClass('selected');
     console.log(class_name);
 
     // $(this).toggleClass('selected');
@@ -193,11 +229,11 @@ $("td").live('click', function() {
         <div class="column" style="background-color:#90EE90;">
             <h3>ТУРЫ ПЕРВОГО КРУГА</h3>
             <?php
-            foreach ($first_round_tours as $index_outer => $tour) {
+            foreach ($tours as $tour_index => $tour) {
                 ?>
                 <div class="my-table">
                 <?php
-                echo '<h4>ТУР НОМЕР ' . ($index_outer + 1) . '</h4>';
+                echo '<h4>ТУР НОМЕР ' . ($tour_index + 1) . '</h4>';
 
                 echo '<table>';
                 ?>
@@ -208,17 +244,17 @@ $("td").live('click', function() {
                 </tr>
 
                 <?php
-                foreach ($tour->get_matches() as $index_inner => $match) {
+                foreach ($tour->get_matches() as $match_index => $match) {
                     ?>
-                    <?php $host_class_name = str_replace(' ', '', $match->get_host()); ?>
-                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest()); ?>
+                    <?php $host_class_name = str_replace(' ', '', $match->get_host_name($command_names)); ?>
+                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest_name($command_names)); ?>
 
                     <tr class="<?= $host_class_name; ?> <?= $guest_class_name; ?>">
                         <td class="<?= $host_class_name; ?>">
-                            <?= $match->get_host(); ?>
+                            <?= $match->get_host_name($command_names); ?>
                         </td>
                         <td class="<?= $guest_class_name; ?>" >
-                            <?= $match->get_guest(); ?>
+                            <?= $match->get_guest_name($command_names); ?>
                         </td>
                     </tr>
                     <?php
@@ -235,11 +271,11 @@ $("td").live('click', function() {
         <div class="column" style="background-color:#ff9999;">
             <h3>ТУРЫ ВТОРОГО КРУГА</h3>
             <?php
-            foreach ($second_round_tours as $index_outer => $tour) {
+            foreach ($reverse_tours as $tour_index => $tour) {
                 ?>
                 <div class="my-table">
                 <?php
-                echo '<h4>ТУР НОМЕР ' . ($index_outer + 1) . '</h4>';
+                echo '<h4>ТУР НОМЕР ' . ($tour_index + $tour_count + 1) . '</h4>';
 
                 echo '<table>';
                 ?>
@@ -250,17 +286,17 @@ $("td").live('click', function() {
                 </tr>
 
                 <?php
-                foreach ($tour->get_matches() as $index_inner => $match) {
+                foreach ($tour->get_matches() as $match_index => $match) {
                     ?>
-                    <?php $host_class_name = str_replace(' ', '', $match->get_host()); ?>
-                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest()); ?>
+                    <?php $host_class_name = str_replace(' ', '', $match->get_host_name($command_names)); ?>
+                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest_name($command_names)); ?>
 
                     <tr class="<?= $host_class_name; ?> <?= $guest_class_name; ?>">
                         <td class="<?= $host_class_name; ?>">
-                            <?= $match->get_host(); ?>
+                            <?= $match->get_host_name($command_names); ?>
                         </td>
                         <td class="<?= $guest_class_name; ?>" >
-                            <?= $match->get_guest(); ?>
+                            <?= $match->get_guest_name($command_names); ?>
                         </td>
                     </tr>
                     <?php
@@ -279,23 +315,3 @@ $("td").live('click', function() {
 
 </body>
 </html>
-<!--
-echo 'ТУРЫ ПЕРВОГО КРУГА' . PHP_EOL;
-foreach ($first_round_tours as $index_outer => $tour) {
-    echo ('ТУР ' . ($index_outer + 1)) . PHP_EOL;
-    foreach ($tour->get_matches() as $index_inner => $match) {
-        echo ($index_inner + 1) . ' -> ' . $match . PHP_EOL;
-    }
-}
-
-echo PHP_EOL . PHP_EOL;
-
-echo 'ТУРЫ ВТОРОГО КРУГА' . PHP_EOL;
-foreach ($second_round_tours as $index_outer => $tour) {
-    echo ('ТУР ' . ($index_outer + 1)) . PHP_EOL;
-    foreach ($tour->get_matches() as $index_inner => $match) {
-        echo ($index_inner + 1) . ' -> ' . $match . PHP_EOL;
-    }
-}
-
-echo PHP_EOL . count($host_playing_tours) . ' -- ' . count($guest_playing_tours) . PHP_EOL;
