@@ -27,6 +27,7 @@ $command_names = [
     'Суонси Сити',
     'Дерби Каунти',
 ];
+shuffle($command_names);
 
 $tour_count = count($command_names) - 1;
 $tour_match_count = count($command_names) / 2;
