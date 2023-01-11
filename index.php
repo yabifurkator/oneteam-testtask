@@ -170,82 +170,13 @@ foreach ($tours as $index => $tour) {
 
 <!DOCTYPE html>
 <html lang="en">
-<style>
 
-table, th, td {
-  border:1px solid black;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-.column {
-    float: left;
-    width: 25%;
-}
-
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-h4 {
-    margin: 0px;
-}
-h3 {
-    margin-left: 30px;
-}
-table {
-    margin-bottom: 25px;
-}
-
-.selected {
-    background-color: #E6E6FA;
-}
-
-.match-selected {
-    background-color: #FFD700;
-}
-
-.my-table {
-    margin: 20px;
-}
-
-</style>
 <head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-$("td").live('click', function() {
-    var class_name = $(this).attr('class').split(' ')[0];
-
-    $("tr").removeClass('match-selected');
-    $("td").removeClass('match-selected');
-    $("td").not(this).removeClass('selected');
-    $("td").not(this).removeClass('double-clicked');
-
-    if (!$(this).hasClass('selected')) {
-        $(this).addClass('selected');
-        $("tr").filter('.' + class_name).addClass('match-selected');
-    }
-    else if(!$(this).hasClass('double-clicked')) {
-        $("tr").removeClass('match-selected');
-        $("td").filter('.' + class_name).not(this).addClass('match-selected');
-        $(this).addClass('double-clicked');
-    }
-    else {
-        $("tr").removeClass('match-selected');
-        $("td").removeClass('match-selected');
-        $("td").removeClass('selected');
-        $("td").removeClass('double-clicked');
-    }
-    console.log(class_name);
-});
-</script>
-
+<link type="text/css" rel="stylesheet" href="style.css">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.js"></script>
 </head>
+
 <body>
     <div class="row">
         <div class="column" style="background-color:#90EE90; margin-left: 400px">

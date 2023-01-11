@@ -1,0 +1,40 @@
+table, th, td {
+    border:1px solid black;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.column {
+    float: left;
+    width: 25%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+h4 {
+    margin: 0px;
+}
+h3 {
+    margin-left: 30px;
+}
+table {
+    margin-bottom: 25px;
+}
+
+.selected {
+    background-color: #E6E6FA;
+}
+
+.match-selected {
+    background-color: #FFD700;
+}
+
+.my-table {
+    margin: 20px;
+}
