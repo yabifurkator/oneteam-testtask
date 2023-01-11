@@ -179,92 +179,56 @@ foreach ($tours as $index => $tour) {
 
 <body>
     <div class="row">
-        <div class="column" style="background-color:#90EE90; margin-left: 400px">
-            <h3>ТУРЫ ПЕРВОГО КРУГА</h3>
-            <?php
-            foreach ($tours as $tour_index => $tour) {
-                ?>
+        <?php for ($i = 0; $i < 2; $i++): ?>
+        <?php
+        if ($i == 0) {
+            $tour_array = $tours;
+            $tour_index_addition = 0;
+            $round_bg_color = '#90EE90';
+            $margin_left = '400px';
+            $h3_title = 'ТУРЫ ПЕРВОГО КРУГА';
+        }
+        else {
+            $tour_array = $reverse_tours;
+            $tour_index_addition = $tour_count;
+            $round_bg_color = '#ff9999';
+            $margin_left = '0px';
+            $h3_title = 'ТУРЫ ВТОРОГО КРУГА';
+        }
+        ?>
+
+        <div class="column" style="background-color: <?= $round_bg_color ?>; margin-left: <?= $margin_left ?>">
+            <h3><?= $h3_title ?></h3>
+            <?php foreach ($tour_array as $tour_index => $tour): ?>
                 <div class="my-table">
-                <?php
-                echo '<h4>ТУР НОМЕР ' . ($tour_index + 1) . '</h4>';
+                    <h4>ТУР НОМЕР <?= $tour_index + $tour_index_addition + 1 ?></h4>
+                    <table>
+                        <tr style="background-color:beige";>
+                            <th>Хозяева</th>
+                            <th>Гости</th>
+                        </tr>
 
-                echo '<table>';
-                ?>
-                
-                <tr style="background-color:beige;">
-                    <th>Хозяева</th>
-                    <th>Гости</th>
-                </tr>
+                        <?php foreach ($tour->get_matches() as $match): ?>
+                            <?php
+                            $host_class_name = str_replace(' ', '', $match->get_host_name($command_names));
+                            $guest_class_name = str_replace(' ', '', $match->get_guest_name($command_names));
+                            ?>
+                        <tr class="<?= $host_class_name . ' ' . $guest_class_name ?> unselectable">
+                            <td class="<?= $host_class_name ?>">
+                                <?= $match->get_host_name($command_names); ?>
+                            </td>
+                            <td class="<?= $guest_class_name; ?>">
+                                <?= $match->get_guest_name($command_names); ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
 
-                <?php
-                foreach ($tour->get_matches() as $match_index => $match) {
-                    ?>
-                    <?php $host_class_name = str_replace(' ', '', $match->get_host_name($command_names)); ?>
-                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest_name($command_names)); ?>
-
-                    <tr class="<?= $host_class_name; ?> <?= $guest_class_name; ?>">
-                        <td class="<?= $host_class_name; ?>">
-                            <?= $match->get_host_name($command_names); ?>
-                        </td>
-                        <td class="<?= $guest_class_name; ?>" >
-                            <?= $match->get_guest_name($command_names); ?>
-                        </td>
-                    </tr>
-                    <?php
-                }
-                echo '</table>';
-                ?>
-
+                    </table>
                 </div>
-                <?php
-            }
-            ?>
+            <?php endforeach; ?>
         </div>
-        
-        <div class="column" style="background-color:#ff9999;">
-            <h3>ТУРЫ ВТОРОГО КРУГА</h3>
-            <?php
-            foreach ($reverse_tours as $tour_index => $tour) {
-                ?>
-                <div class="my-table">
-                <?php
-                echo '<h4>ТУР НОМЕР ' . ($tour_index + $tour_count + 1) . '</h4>';
-
-                echo '<table>';
-                ?>
-                
-                <tr style="background-color:beige;">
-                    <th>Хозяева</th>
-                    <th>Гости</th>
-                </tr>
-
-                <?php
-                foreach ($tour->get_matches() as $match_index => $match) {
-                    ?>
-                    <?php $host_class_name = str_replace(' ', '', $match->get_host_name($command_names)); ?>
-                    <?php $guest_class_name = str_replace(' ', '', $match->get_guest_name($command_names)); ?>
-
-                    <tr class="<?= $host_class_name; ?> <?= $guest_class_name; ?>">
-                        <td class="<?= $host_class_name; ?>">
-                            <?= $match->get_host_name($command_names); ?>
-                        </td>
-                        <td class="<?= $guest_class_name; ?>" >
-                            <?= $match->get_guest_name($command_names); ?>
-                        </td>
-                    </tr>
-                    <?php
-                }
-                echo '</table>';
-                ?>
-
-                </div>
-                <?php
-            }
-            ?>
-        </div>
+        <?php endfor; ?>
     </div>
-
-    
 
 </body>
 </html>

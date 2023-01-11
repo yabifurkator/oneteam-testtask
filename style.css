@@ -38,3 +38,7 @@ table {
 .my-table {
     margin: 20px;
 }
+
+.unselectable {
+    user-select: none;
+}
