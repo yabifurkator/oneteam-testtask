@@ -201,6 +201,10 @@ table {
 }
 
 .selected {
+    background-color: #E6E6FA;
+}
+
+.match-selected {
     background-color: #FFD700;
 }
 
@@ -215,11 +219,13 @@ table {
 <script type="text/javascript">
 $("td").live('click', function() {
     var class_name = $(this).attr('class');
-    $("td").removeClass('selected')
-    $("td").filter('.' + class_name).not(this).toggleClass('selected');
+    $("tr").removeClass('match-selected');
+    $("td").not(this).removeClass('selected');
+
+    $("tr").filter('.' + class_name).addClass('match-selected');
+    $(this).toggleClass('selected');
     console.log(class_name);
 
-    // $(this).toggleClass('selected');
 });
 </script>
 
